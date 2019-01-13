@@ -3,6 +3,7 @@ from lxml import etree
 import pymongo
 import setting
 from requests.exceptions import ConnectionError
+from multiprocessing import Pool
 
 
 
@@ -62,26 +63,25 @@ class MaoYan(object):
     def save_data(self,item):
         self.collection.insert(item)
 
-    def run(self):
+    def run(self, i):
         # 获取url，以及后面的url
         # url的规律是后面的为0，10，20等
-        for i in range(10):
-            i = i * 10
-            url = self.url.format(i)
+        url = self.url.format(i)
         # 提取url的html
-            html_str = self.parse(url)
-            if html_str is None:
-                pass
+        html_str = self.parse(url)
+        if html_str is None:
+            pass
             # 提取html中要爬取的内容
-            item_list = self.get_data(html_str)
+        item_list = self.get_data(html_str)
             # 存储提取的信息
-            for item in item_list:
-                self.save_data(item)
+        for item in item_list:
+            self.save_data(item)
 
 
-def main():
+def main(i):
     maoyan = MaoYan()
-    maoyan.run()
+    maoyan.run(i)
 
 if __name__ == '__main__':
-    main()
+    pool = Pool()
+    pool.map(main,[i*10 for i in range(10)])
