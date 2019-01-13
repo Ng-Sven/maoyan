@@ -1,7 +1,7 @@
 import requests
 from lxml import etree
 import pymongo
-from maoyantop100 import setting
+import setting
 from requests.exceptions import ConnectionError
 
 
